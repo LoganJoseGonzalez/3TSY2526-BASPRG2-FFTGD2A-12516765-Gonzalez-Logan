@@ -1,0 +1,64 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+vector<string> inventoryFill() {
+	vector<string> inventory;
+
+	vector<string> itemsAvailable = { "Elixir", "BluePotion", "EmptyBottle", "RedPotion" };
+
+	for (int i = 0; i < 10; i++) {
+		int randNum = rand() % 4;
+		inventory.push_back(itemsAvailable[randNum]);
+	}
+	return inventory;
+}
+
+void inventoryDisplay(vector<string>& inventory) {
+	cout << "Current Inventory:\n";
+	for (int i = 0; i < inventory.size(); i++) {
+		cout << "-  " << inventory[i] << "\n";
+	}
+}
+
+int itemCount(vector<string>& inventory, string itemToCount) {
+	int count = 0; 
+	for (int i = 0; i < inventory.size(); i++) {
+		if (inventory[i] == itemToCount) {
+			count++;
+		}
+	}
+	return count;
+}
+
+void itemRemoval(vector<string>& inventory, string itemToRemove) {
+	for (int i = inventory.size() - 1; i >= 0; i--) {
+		if (inventory[i] == itemToRemove) {
+			inventory.erase(inventory.begin() + i);
+		}
+	}
+}
+
+int main()
+{
+	srand(time(0)); 
+
+	vector<string> p_Inventory = inventoryFill(); 
+
+	inventoryDisplay(p_Inventory);
+
+	string searchTarget = "Elixir";
+	int count = itemCount(p_Inventory, searchTarget);
+	cout << "Number of " << searchTarget << " in inventory: " << count << "\n\n";
+
+	string removalTarget = "EmptyBottle";
+	cout << "Removing all " << removalTarget << " from inventory \n";	
+	itemRemoval(p_Inventory, removalTarget);
+	inventoryDisplay(p_Inventory);
+
+	return 0;
+}
