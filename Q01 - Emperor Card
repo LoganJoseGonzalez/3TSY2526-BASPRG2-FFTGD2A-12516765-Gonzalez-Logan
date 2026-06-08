@@ -1,0 +1,167 @@
+#include <iostream>
+#include <vector>
+#include <time.h>
+using namespace std;
+
+vector<string> populateDeck(bool cardType)
+{
+    vector<string> hand;
+        hand.push_back("Civilian");
+        hand.push_back("Civilian");
+        hand.push_back("Civilian");
+        hand.push_back("Civilian");
+    
+    if (cardType == true)
+    {
+        hand.push_back("Emperor");
+    }
+    else
+    {
+        hand.push_back("Slave");
+    }
+
+
+    return hand;
+}
+void wagerMM(int& mmLeft, int& mmWager)
+{
+   
+    while (mmWager < 1 || mmWager > mmLeft)
+    {
+        cout << "You have " << mmLeft << "mm to bets, how much are you willing to sacrifice?\n";
+        cin >> mmWager;
+    }
+
+
+}
+string playHand(vector<string>& hand, string& handPlayed, int mmWager, int round, bool cardType)
+{
+
+    bool loop = true;
+    while (loop == true)
+    {
+        cout << "Choose a card \n";
+        for (int i = 0; i < hand.size(); i++)
+        {
+            cout << hand[i] << endl;
+        }
+        cin >> handPlayed;
+
+        if (handPlayed == "Emperor" || handPlayed == "Civilian" || handPlayed == "Slave")
+        {
+            if (cardType == true && handPlayed == "Slave")
+            {
+                cout << "Your card is Emperor, betting again.\n";
+                continue;
+            }
+            else if (cardType == false && handPlayed == "Emperor")
+            {
+                cout << "Your card is Slave, betting again.\n";
+                continue;
+            }
+            else
+            {
+                loop = false;
+
+
+            }
+
+        }
+        else
+        {
+            cout << "Invalid card, please play a valid card.\n";
+            continue;
+        }
+    }
+    return handPlayed;
+}
+
+
+string enemyHand(vector<string>& hand)
+{
+    int aiHand = rand() % hand.size();
+    string handPlayed = hand[aiHand];
+
+    return handPlayed;
+}
+
+void evaluateMatchup(string playerDeck, string aiDeck, int mmWager, int& mmLeft, int& betEarned)
+{
+    if (playerDeck == "Civilian" && aiDeck == "Civilian")
+    {
+        cout << "Draw, nothing was lost.\n";
+    }
+    if ((playerDeck == "Emperor" && aiDeck == "Civilian") || (playerDeck == "Civilian" && aiDeck == "Slave"))
+    {
+        cout << "You win! For now...\n";
+        betEarned += mmLeft * 100000;
+    }
+    if (playerDeck == "Slave" && aiDeck == "Emperor")
+    {
+        cout << "You won a LOT! Don't get cocky now\n";
+        betEarned += mmLeft * 500000;
+    }
+    if ((playerDeck == "Civilian" && aiDeck == "Emperor") || (playerDeck == "Slave" && aiDeck == "Civilian") || (playerDeck == "Emperor" && aiDeck == "Slave"))
+    {
+        cout << "You lost! wah wah wah\n";
+        mmLeft -= mmWager;
+    }
+}
+ void playRound(int round, int& betEarned, int& mmLeft, int& mmWager, string& handPlayed)
+{
+    bool cardType = ((round >= 1 && round <= 3) || (round >= 7 && round <= 9));
+    cout << "Round " << round << "\n";
+    cout << "You recieved " << betEarned << " money,\n";
+    vector <string> playerDeck = populateDeck(cardType);
+    vector <string> aiDeck = populateDeck(!cardType);
+    wagerMM(mmLeft, mmWager);
+
+    string playerHand = playHand(playerDeck, handPlayed, mmWager, round, cardType);
+    string aiHand = enemyHand(aiDeck);
+
+    cout << "You played " << playerHand << endl;
+    cout << "AI played " << aiHand << endl;
+
+    evaluateMatchup(playerHand, aiHand, mmWager, mmLeft, betEarned);
+
+    playerDeck.clear();
+    aiDeck.clear();
+}
+void endingEvaluation(int mmLeft, int betEarned)
+{
+
+    cout << "You have ended with " << betEarned << " money and " << mmLeft << " bets left\n";
+   
+    if (betEarned >= 20000000)
+    {
+        cout << "You won wahooo!\n";
+    }
+    if (betEarned < 20000000 && mmLeft > 0)
+    {
+        cout << "You won... but at what cost?\n";
+    }
+    if (mmLeft <= 0)
+    {
+        cout << "You lose, you suck lol\n";
+    }
+}
+int main()
+{
+    srand(time(NULL));
+
+    string cardplayed;
+    int mmLeft = 30;
+    int mmWager;
+    int round = 1;
+    int betEarned = 0;
+
+    while (round <= 12 && mmLeft > 0)
+    {
+        playRound(round, betEarned, mmLeft, mmWager, cardplayed);
+        round++;
+        system("pause");
+        system("cls");
+    }
+
+    endingEvaluation(mmLeft, betEarned);
+}
