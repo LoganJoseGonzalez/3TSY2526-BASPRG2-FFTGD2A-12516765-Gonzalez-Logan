@@ -1,0 +1,118 @@
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+struct Item
+{
+    string name;
+    int gold;
+};
+
+int pcGold = 50; 
+const int requiredGold = 500;
+const int dungeonTax = 25;
+
+Item mithrilOre = { "Mithril Ore", 100 };
+Item sharpTalon = { "Sharp Talon", 50 };
+Item thickLeather = { "Thick Leather", 25 };
+Item jellopy = { "Jellopy", 5 };
+Item cursedStone = { "Cursed Stone", 0 };
+
+Item* randItem()
+{
+    int randRoll = rand() % 5;
+
+    switch (randRoll)
+    {
+    case 0:
+        return &mithrilOre;
+    case 1:
+        return &sharpTalon;
+    case 2:
+        return &thickLeather;
+    case 3:
+        return &jellopy;
+    case 4:
+        return &cursedStone;
+    default:
+        return &jellopy;
+    }
+}
+
+void enterDungeon()
+{
+    cout << "Dungeon Entrance, 25 gold to get in!" << endl;
+    pcGold -= dungeonTax;
+    cout << "Gold: " << pcGold << "\n" << endl;
+
+    int runGold = 0;
+    int multiplier = 1;
+    string choice;
+
+    while (true)
+    {
+        Item* loot = randItem();
+        cout << "Found " << loot->name << endl;
+
+        if (loot->name == "Cursed Stone")
+        {
+            cout << "You found the Cursed Stone... Die..." << endl;
+            runGold = 0;
+            break;
+        }
+
+        int value = loot->gold * multiplier;
+        runGold += value;
+
+        int potGold = pcGold + runGold;
+
+        cout << "You have " << value << " gold. (Multiplier in effect: x" << multiplier << ")" << endl;
+        cout << "Potential gold: " << potGold << endl;
+        cout << "Required gold: " << requiredGold << endl;
+
+        cout << "Do you wish to go deeper? Yes or No\n";
+        cin >> choice;
+
+        if (choice == "Yes" || choice == "No")
+        {
+            multiplier++;
+            cout << "When will it be enough?" << endl;
+        }
+        else
+        {
+            cout << "Is it enough?" << endl;
+            pcGold += runGold;
+            break;
+        }
+    }
+    cout << "Dive complete" << endl;
+    cout << "Current total: " << pcGold << " gold." << endl;
+}
+
+int main()
+{
+    srand(time(0));
+
+    cout << "Dungeon of Doom and Dispair" << endl;
+
+    while (pcGold >= dungeonTax && pcGold < requiredGold)
+    {
+        enterDungeon();
+    }
+
+    if (pcGold >= requiredGold)
+    {
+        cout << "Your greed is satiated...for now" << endl;
+        cout << "Gold required: " << requiredGold << endl;
+        cout << "Gold amount: " << pcGold << endl;
+    }
+    else
+    {
+        cout << "Your greed got the better of you, you lose" << endl;
+        cout << "You had: " << pcGold << "... it was not enough..." << endl;
+    }
+    return 0;
+}
