@@ -1,0 +1,115 @@
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+#include "Node.h"
+
+using namespace std;
+
+Node* plusKnight(Node* tail, string name);
+void printList(Node* start, int total);
+Node* killKnight(Node*& counter, int total);
+
+int main() {
+    srand((unsigned int)time(NULL));
+
+    Node* tail = nullptr;
+    int total = 0;
+    string input = "";
+
+    while (total < 5) {
+        cout << "What's your name, knight? ";
+        getline(cin, input);
+        if (input != "") {
+            tail = plusKnight(tail, input);
+            total++;
+            system("pause");
+            system("cls");
+        }
+    }
+
+    Node* counter = tail->next;
+    int steps = rand() % total;
+    for (int i = 0; i < steps; i++) {
+        counter = counter->next;
+    }
+    cout << endl;
+
+    int roundCounter = 1;
+    while (total > 0) {
+        switch (total) {
+        case 1:
+            cout << "Result\n";
+            cout << counter->name << " finds more Knights\n\n";
+
+            delete counter; 
+            total--;
+            break;
+
+        default:
+            cout << "Round " << roundCounter << "\n";
+
+            printList(counter, total);
+            counter = killKnight(counter, total); 
+
+            total--;
+            roundCounter++;
+            system("pause");
+            system("cls");
+            break;
+        }
+    }
+
+    cout << "Press any key to continue";
+    cin.get();
+    return 0;
+}
+
+Node* plusKnight(Node* tail, string name) {
+    Node* alt = new Node();
+    alt->name = name;
+
+    if (tail == nullptr) {
+        alt->next = alt;
+        alt->previous = alt;
+        return alt;
+    }
+
+    Node* head = tail->next;
+    alt->next = head;
+    alt->previous = tail;
+    tail->next = alt;
+    head->previous = alt;
+    return alt;
+}
+
+void printList(Node* start, int total) {
+    cout << "Knights Left:\n";
+    Node* alt = start;
+    for (int i = 0; i < total; i++) {
+        cout << alt->name << "\n";
+        alt = alt->next;
+    }
+    cout << "\n";
+}
+
+Node* killKnight(Node*& counter, int total) {
+    int roll = (rand() % total) + 1;
+    cout << counter->name << " rolled " << roll << "\n";
+
+    Node* target = counter;
+    for (int i = 0; i < roll; i++) {
+        target = target->next;
+    }
+    cout << target->name << " Died\n\n";
+
+    Node* nextKnight = target->next;
+    Node* leftKnight = target->previous;
+    Node* rightKnight = target->next;
+
+    leftKnight->next = rightKnight;
+    rightKnight->previous = leftKnight;
+
+    delete target;
+    return nextKnight;
+}
